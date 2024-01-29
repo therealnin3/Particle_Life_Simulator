@@ -7,6 +7,11 @@ public class GameManager : MonoBehaviour
     [Header("---Prefabs---")]
     [SerializeField] private GameObject _particlePrefab;
 
+    [Header("---Spawn Area---")]
+    [SerializeField] private Vector2 _spawnAreaRatio = new Vector2(10, 10); // {Height, Width}
+    [SerializeField] private Vector2 _spawnAreaCenter = new Vector2(0, 0); // {x, y}
+    [HideInInspector] public Vector4 _bounds; // {minX, maxX, minY, maxY}
+
     [Header("---Color Palette---")]
     [SerializeField] public Color[] _colorPalette = new Color[] { Color.red };
     private ColorType[] _colorTypes;
@@ -17,15 +22,29 @@ public class GameManager : MonoBehaviour
     [SerializeField] public float _maxDetectionRadius = 2f;
     [SerializeField] public float _friction = 0.1f; // the higher the value, the more friction
 
-
     [Header("---Particles Settings---")]
     [SerializeField] private int _particleCount = 20;
 
     private List<GameObject> _particles = new List<GameObject>();
-    private float[][] _weights;
+    public float[][] _weights;
 
-    private void Start()
+
+    // Gizmos
+    private void OnDrawGizmos()
     {
+        // Draw spawn area
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(_spawnAreaCenter, _spawnAreaRatio);
+    }
+
+    private void Awake()
+    {
+        float _minX = _spawnAreaCenter.x - (_spawnAreaRatio.x / 2);
+        float _maxX = _spawnAreaCenter.x + (_spawnAreaRatio.x / 2);
+        float _minY = _spawnAreaCenter.y - (_spawnAreaRatio.y / 2);
+        float _maxY = _spawnAreaCenter.y + (_spawnAreaRatio.y / 2);
+        _bounds = new Vector4(_minX, _maxX, _minY, _maxY);
+
         SetWeights();
         SpawnParticles(_particleCount);
     }
@@ -54,7 +73,7 @@ public class GameManager : MonoBehaviour
 
     private void SpawnParticle(ColorType colorType)
     {
-        Vector3 randomPos = new Vector3(Random.Range(SpawnArea._bounds.x, SpawnArea._bounds.y), Random.Range(SpawnArea._bounds.z, SpawnArea._bounds.w), 0f);
+        Vector3 randomPos = new Vector3(Random.Range(_bounds.x, _bounds.y), Random.Range(_bounds.z, _bounds.w), 0f);
         GameObject particle = Instantiate(_particlePrefab, randomPos, Quaternion.identity);
         particle.GetComponent<Particle>().Init(gameObject.GetComponent<GameManager>(), colorType);
 
