@@ -4,7 +4,6 @@ using UnityEngine.EventSystems;
 
 public class MatrixBtn : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
-
     private MatrixController _mc;
     private Image _img;
     private float _value = 0f;

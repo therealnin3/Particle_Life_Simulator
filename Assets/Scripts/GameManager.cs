@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
             _weights[i] = new float[colorCount];
             for (int j = 0; j < colorCount; j++)
             {
-                _weights[i][j] = Random.Range(-1f, 1f);
+                _weights[i][j] = 1f;
             }
         }
         CreateColorTypes(colorCount);
