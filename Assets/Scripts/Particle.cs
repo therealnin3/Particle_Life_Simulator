@@ -4,22 +4,43 @@ using UnityEngine;
 
 public class Particle : MonoBehaviour
 {
-    // Static variables
-    public static float _radius;
-    public static float _maxInfluenceRadius;
-    public static float _maxDetectionRadius;
+    // GameManager
+    GameManager _gm;
 
     // Local variables
-    private Color _color;
-    private Vector2 _velocity;
+    public ColorType _colorType;
+    public Vector2 _velocity;
 
     // Components
     private SpriteRenderer _sr;
 
-    public void Init(Color color)
+    public void Update()
     {
+        // Apply friction
+        _velocity *= 1f - _gm._friction;
+
+        // Move
+        transform.position += (Vector3)_velocity * Time.deltaTime;
+    }
+
+    public void Init(GameManager gm, ColorType colorType)
+    {
+        _gm = gm;
         _sr = GetComponent<SpriteRenderer>();
-        _color = color;
-        _sr.color = color;
+        _colorType = colorType;
+        _sr.color = colorType._color;
+        transform.localScale = Vector3.one * _gm._radius * 2f;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, _gm._radius);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, _gm._maxInfluenceRadius);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, _gm._maxDetectionRadius);
     }
 }
