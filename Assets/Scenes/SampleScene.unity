@@ -1806,6 +1806,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1429783270}
   - component: {fileID: 1429783269}
+  - component: {fileID: 1429783271}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1825,18 +1826,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87f9307bbef108a4c83904160649ac92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _particlePrefab: {fileID: 5908147481965847742, guid: 59e8c0f479f902044a2c5846422c723e, type: 3}
-  _particleRadius: 0.3
-  _particleInfluenceRadius: 1
-  _particleFriction: 0.15
-  _particleAmount: 5
-  _forceMultiplier: 10
-  _spawnAreaRatio: {x: 10, y: 10}
-  _spawnAreaCenter: {x: 0, y: 0}
+  _particlePrefab: {fileID: 1859622148874342822, guid: 59e8c0f479f902044a2c5846422c723e, type: 3}
   _colorPalette:
   - {r: 1, g: 0.2969432, b: 0.2969432, a: 1}
   - {r: 0.2980392, g: 0.86420065, b: 1, a: 1}
   - {r: 0.64641356, g: 0.35933605, b: 0.8018868, a: 1}
+  _particleCount: 20
 --- !u!4 &1429783270
 Transform:
   m_ObjectHideFlags: 0
@@ -1851,6 +1846,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1429783271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1429783268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47e9294b7699c9c449c4ba887b5797f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spawnAreaRatio: {x: 9.66, y: 10}
+  _spawnAreaCenter: {x: 0, y: 0}
 --- !u!1 &1648810542
 GameObject:
   m_ObjectHideFlags: 0
