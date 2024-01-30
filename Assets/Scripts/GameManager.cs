@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -110,7 +109,11 @@ public class GameManager : MonoBehaviour
             _weights[i] = new float[colorCount];
             for (int j = 0; j < colorCount; j++)
             {
-                _weights[i][j] = 1f;
+
+                // _weights[i][j] = Random.Range(-1f, 1f);  // Random weights
+                // _weights[i][j] = 1f; // Full attraction
+                _weights[i][j] = 0f; // No influence
+                // _weights[i][j] = 0.5f; // Full repel 
             }
         }
         CreateColorTypes(colorCount);

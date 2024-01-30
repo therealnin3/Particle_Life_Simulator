@@ -32,17 +32,20 @@ public class MatrixBtn : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        // RightClick
-        if (pointerEventData.button == PointerEventData.InputButton.Right)
-        {
-            //Output to console the clicked GameObject's name and the following message. You can replace this with your own actions for when clicking the GameObject.
-            Debug.Log(name + " Game Object Right Clicked!");
-        }
-
         // LeftClick
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            Debug.Log(name + " Game Object Left Clicked!");
+            _value += _mc._editValue;
+            if (_value > 1f) _value = 1f;
+            SetColorByValue(_value);
+        }
+
+        // RightClick
+        if (pointerEventData.button == PointerEventData.InputButton.Right)
+        {
+            _value -= _mc._editValue;
+            if (_value < -1f) _value = -1f;
+            SetColorByValue(_value);
         }
     }
 

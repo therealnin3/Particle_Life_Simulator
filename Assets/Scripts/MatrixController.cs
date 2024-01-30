@@ -12,6 +12,9 @@ public class MatrixController : MonoBehaviour
     [Header("---References---")]
     [SerializeField] GameManager _gm;
 
+    [Header("---Settings---")]
+    [SerializeField] public float _editValue = 0.1f;
+
     [Header("---Colors---")]
     [SerializeField] public Color _attractionColor = Color.green;
     [SerializeField] public Color _repelColor = Color.red;
