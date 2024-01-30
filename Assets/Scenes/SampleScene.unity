@@ -377,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _matrixBtnPrefab: {fileID: 6410665233965053900, guid: c2f5080d974d6d044932edc1d4a2c5a9, type: 3}
   _gm: {fileID: 1429783269}
-  _editValue: 0.1
+  _editValue: 0.2
   _attractionColor: {r: 0, g: 1, b: 0, a: 1}
   _repelColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1368299909
@@ -523,7 +523,7 @@ MonoBehaviour:
   _maxInfluenceRadius: 0.65
   _maxDetectionRadius: 1
   _friction: 0.1
-  _particleCount: 50
+  _particleCount: 100
 --- !u!4 &1429783270
 Transform:
   m_ObjectHideFlags: 0

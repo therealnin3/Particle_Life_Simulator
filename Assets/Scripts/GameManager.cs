@@ -113,8 +113,8 @@ public class GameManager : MonoBehaviour
             _weights[i] = new RelationshipSquare[colorCount];
             for (int j = 0; j < colorCount; j++)
             {
-                // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // no influence by default
-                _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 1f); // attraction by default
+                _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // no influence by default
+                // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 1f); // attraction by default
                 // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // repulsion by default
                 // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), Random.Range(-1f, 1f));
             }

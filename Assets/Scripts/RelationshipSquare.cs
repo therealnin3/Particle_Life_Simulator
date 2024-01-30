@@ -22,8 +22,17 @@ public class RelationshipSquare
         Test();
     }
 
+    public void ChangeWeight(float weight)
+    {
+        _weight = weight;
+        _relationship.EditMaxInfluenceWeight(weight);
+    }
+
     public void Test()
     {
+        // Clear curve
+        curve = new AnimationCurve();
+
         for (int i = 0; i < 100; i++)
         {
             float t = i / 100f;

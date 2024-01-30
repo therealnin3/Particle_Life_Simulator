@@ -9,7 +9,7 @@ public class LinearPiecewiseFunction
     private LinearFunction[] _functions;
     private GameManager _gm;
     private float _diameter;
-    private float _diameterCutOff = 0.1f; // Particles can overlap this %
+    private float _diameterCutOff = 0f; // Particles can overlap this %
 
     public LinearPiecewiseFunction(GameManager gm, float maxInfluenceWeight)
     {
@@ -78,6 +78,7 @@ public class LinearPiecewiseFunction
     public void EditMaxInfluenceWeight(float maxInfluenceWeight)
     {
         _points[2].y = maxInfluenceWeight;
+        _functions = GenerateFunctions(_points);
     }
 
     private class LinearFunction
