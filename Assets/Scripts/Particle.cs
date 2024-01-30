@@ -8,8 +8,9 @@ public class Particle : MonoBehaviour
     GameManager _gm;
 
     // Local variables
-    public ColorType _colorType;
     public Vector2 _velocity;
+    public int _colorIndex;
+    public RelationshipSquare[] _relationships;
 
     // Components
     private SpriteRenderer _sr;
@@ -35,12 +36,15 @@ public class Particle : MonoBehaviour
         transform.position = pos;
     }
 
-    public void Init(GameManager gm, ColorType colorType)
+    public void Init(GameManager gm, Color color, int colorIndex, RelationshipSquare[] relationships)
     {
         _gm = gm;
+        _relationships = relationships;
+        _colorIndex = colorIndex;
         _sr = GetComponent<SpriteRenderer>();
-        _colorType = colorType;
-        _sr.color = colorType._color;
+        _sr.color = color;
+
+        // Set radius
         transform.localScale = Vector3.one * _gm._radius * 2f;
     }
 

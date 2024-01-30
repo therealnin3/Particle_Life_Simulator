@@ -7,10 +7,10 @@ using UnityEngine.UI;
 public class MatrixController : MonoBehaviour
 {
     [Header("---Prefabs---")]
-    [SerializeField] GameObject _matrixBtnPrefab;
+    [SerializeField] private GameObject _matrixBtnPrefab;
 
     [Header("---References---")]
-    [SerializeField] GameManager _gm;
+    [SerializeField] public GameManager _gm;
 
     [Header("---Settings---")]
     [SerializeField] public float _editValue = 0.1f;
@@ -30,20 +30,24 @@ public class MatrixController : MonoBehaviour
             {
                 if (i == 0 && j == 0)
                 {
+                    // Top left corner
                     CreateImageGameObject("Transparent", new Color(0, 0, 0, 0), transform);
                 }
                 else if (i == 0)
                 {
+                    // Row titles
                     CreateImageGameObject("ColTitle_" + j, _gm._colorPalette[j - 1], transform);
                 }
                 else if (j == 0)
                 {
+                    // Column titles
                     CreateImageGameObject("RowTitle_" + i, _gm._colorPalette[i - 1], transform);
                 }
                 else
                 {
+                    // Matrix buttons
                     GameObject obj = Instantiate(_matrixBtnPrefab, transform);
-                    obj.GetComponent<MatrixBtn>().Init(this.GetComponent<MatrixController>(), _gm._weights[i - 1][j - 1]);
+                    obj.GetComponent<MatrixBtn>().Init(this, _gm._weights[i - 1][j - 1]);
                 }
             }
         }

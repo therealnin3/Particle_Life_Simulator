@@ -1,33 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 
-public class MatrixBtn : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class MatrixBtn : MonoBehaviour, IPointerClickHandler//, IPointerEnterHandler, IPointerExitHandler
 {
     private MatrixController _mc;
     private Image _img;
-    private float _value = 0f;
+    public RelationshipSquare _relationshipSquare;
 
-    public void Init(MatrixController mc, float value)
+    public void Init(MatrixController mc, RelationshipSquare relationshipSquare)
     {
-        // Get components
-        _img = GetComponent<Image>();
-
-        // Set references
-        _value = value;
         _mc = mc;
+        _img = GetComponent<Image>();
+        _relationshipSquare = relationshipSquare;
 
         // Set color
-        SetColorByValue(_value);
-    }
-
-    private void SetColorByValue(float value)
-    {
-        // Map _value from [-1, 1] to [0, 1]
-        float normalizedValue = (value + 1f) / 2f;
-
-        // Interpolate between _repelColor and _attractionColor
-        _img.color = Color.Lerp(_mc._repelColor, _mc._attractionColor, normalizedValue);
+        _img.color = GetColorByValue(_mc._repelColor, _mc._attractionColor, _relationshipSquare._weight);
     }
 
     public void OnPointerClick(PointerEventData pointerEventData)
@@ -35,18 +24,23 @@ public class MatrixBtn : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
         // LeftClick
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            _value += _mc._editValue;
-            if (_value > 1f) _value = 1f;
-            SetColorByValue(_value);
+            Debug.Log("Left click");
         }
 
         // RightClick
         if (pointerEventData.button == PointerEventData.InputButton.Right)
         {
-            _value -= _mc._editValue;
-            if (_value < -1f) _value = -1f;
-            SetColorByValue(_value);
+            Debug.Log("Right click");
         }
+    }
+
+    private Color GetColorByValue(Color c1, Color c2, float value)
+    {
+        // Map _value from [-1, 1] to [0, 1]
+        float normalizedValue = (value + 1f) / 2f;
+
+        // Interpolate between _repelColor and _attractionColor
+        return Color.Lerp(c1, c2, normalizedValue);
     }
 
     // Hover: Enter

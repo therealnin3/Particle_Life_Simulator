@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
 
     [Header("---Color Palette---")]
     [SerializeField] public Color[] _colorPalette = new Color[] { Color.red };
-    private ColorType[] _colorTypes;
 
     [Header("---Particle Settings---")]
     [SerializeField] public float _radius = 0.3f;
@@ -25,7 +24,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int _particleCount = 20;
 
     private List<GameObject> _particles = new List<GameObject>();
-    public float[][] _weights;
+    public RelationshipSquare[][] _weights;
 
 
     // Gizmos
@@ -38,13 +37,17 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        // Set spawnArea
         float _minX = _spawnAreaCenter.x - (_spawnAreaRatio.x / 2);
         float _maxX = _spawnAreaCenter.x + (_spawnAreaRatio.x / 2);
         float _minY = _spawnAreaCenter.y - (_spawnAreaRatio.y / 2);
         float _maxY = _spawnAreaCenter.y + (_spawnAreaRatio.y / 2);
         _bounds = new Vector4(_minX, _maxX, _minY, _maxY);
 
+        // Set Weights
         SetWeights();
+
+        // Spawn Particles
         SpawnParticles(_particleCount);
     }
 
@@ -66,15 +69,17 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < amount; i++)
         {
-            SpawnParticle(_colorTypes[Random.Range(0, _colorPalette.Length)]);
+            SpawnParticle();
         }
     }
 
-    private void SpawnParticle(ColorType colorType)
+    private void SpawnParticle()
     {
         Vector3 randomPos = new Vector3(Random.Range(_bounds.x, _bounds.y), Random.Range(_bounds.z, _bounds.w), 0f);
         GameObject particle = Instantiate(_particlePrefab, randomPos, Quaternion.identity);
-        particle.GetComponent<Particle>().Init(gameObject.GetComponent<GameManager>(), colorType);
+
+        int colorIndex = Random.Range(0, _colorPalette.Length);
+        particle.GetComponent<Particle>().Init(this, _colorPalette[colorIndex], colorIndex, _weights[colorIndex]);
 
         // Add particle to list
         _particles.Add(particle);
@@ -91,8 +96,7 @@ public class GameManager : MonoBehaviour
         if (distance <= _maxDetectionRadius)
         {
             float t = distance / _maxDetectionRadius;
-            int appliedColorIndex = GetColorIndex(applierParticle._colorType._color);
-            float weight = receiverParticle._colorType._relationships[appliedColorIndex].Evaluate(t);
+            float weight = receiverParticle._relationships[applierParticle._colorIndex]._relationship.Evaluate(t);
 
             // Apply influence
             Vector2 direction = (applier.transform.position - receiver.transform.position).normalized;
@@ -103,40 +107,17 @@ public class GameManager : MonoBehaviour
     private void SetWeights()
     {
         int colorCount = _colorPalette.Length;
-        _weights = new float[colorCount][];
+        _weights = new RelationshipSquare[colorCount][];
         for (int i = 0; i < colorCount; i++)
         {
-            _weights[i] = new float[colorCount];
+            _weights[i] = new RelationshipSquare[colorCount];
             for (int j = 0; j < colorCount; j++)
             {
-
-                // _weights[i][j] = Random.Range(-1f, 1f);  // Random weights
-                // _weights[i][j] = 1f; // Full attraction
-                _weights[i][j] = 0f; // No influence
-                // _weights[i][j] = 0.5f; // Full repel 
+                // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // no influence by default
+                _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 1f); // attraction by default
+                // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // repulsion by default
+                // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), Random.Range(-1f, 1f));
             }
         }
-        CreateColorTypes(colorCount);
-    }
-
-    private void CreateColorTypes(int amount)
-    {
-        _colorTypes = new ColorType[amount];
-        for (int i = 0; i < amount; i++)
-        {
-            _colorTypes[i] = new ColorType(GetComponent<GameManager>(), _colorPalette[i], _weights[i]);
-        }
-    }
-
-    private int GetColorIndex(Color color)
-    {
-        for (int i = 0; i < _colorTypes.Length; i++)
-        {
-            if (_colorPalette[i] == color)
-            {
-                return i;
-            }
-        }
-        return -1;
     }
 }
