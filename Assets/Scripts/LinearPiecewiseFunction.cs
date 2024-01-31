@@ -4,18 +4,14 @@ using UnityEngine;
 
 public class LinearPiecewiseFunction
 {
-
     private Vector2[] _points;
     private LinearFunction[] _functions;
     private GameManager _gm;
-    private float _diameter;
-    private float _diameterCutOff = 0f; // Particles can overlap this %
 
     public LinearPiecewiseFunction(GameManager gm, float maxInfluenceWeight)
     {
         // Reference Gamemanager
         _gm = gm;
-        _diameter = gm._radius * 2f * (1f - _diameterCutOff);
 
         //  1       .
         //         / \
@@ -26,7 +22,7 @@ public class LinearPiecewiseFunction
         // Generate 4 points and normalize them
         Vector2[] points = new Vector2[4];
         points[0] = new Vector2(0, -1f);
-        points[1] = new Vector2(_diameter, 0);
+        points[1] = new Vector2(gm._radius, 0);
         points[2] = new Vector2(gm._maxInfluenceRadius, maxInfluenceWeight);
         points[3] = new Vector2(gm._maxDetectionRadius, 0);
         _points = NormalizePoints(points);
@@ -37,11 +33,12 @@ public class LinearPiecewiseFunction
 
     public float Evaluate(float t)
     {
-        if (t < _diameter)
+        // Smaller than radius
+        if (t < _points[1].x)
         {
             return _functions[0].Evaluate(t);
         }
-        else if (t < _gm._maxInfluenceRadius)
+        else if (t < _points[2].x)
         {
             return _functions[1].Evaluate(t);
         }
@@ -50,7 +47,6 @@ public class LinearPiecewiseFunction
             return _functions[2].Evaluate(t);
         }
     }
-
 
     private LinearFunction[] GenerateFunctions(Vector2[] points)
     {
@@ -64,26 +60,33 @@ public class LinearPiecewiseFunction
 
     private Vector2[] NormalizePoints(Vector2[] points)
     {
-        float minX = points[0].x;
-        float maxX = points[points.Length - 1].x;
-
+        // Normalize points
+        Vector2[] normalizedPoints = new Vector2[points.Length];
         for (int i = 0; i < points.Length; i++)
         {
-            points[i].x = (points[i].x - minX) / (maxX - minX);
+            normalizedPoints[i] = new Vector2(points[i].x / _gm._maxDetectionRadius, points[i].y);
         }
-
-        return points;
+        return normalizedPoints;
     }
 
-    public void EditMaxInfluenceWeight(float maxInfluenceWeight)
+    // External use
+    public float EditMaxInfluenceWeight(float maxInfluenceWeight)
     {
+        float threshold = 1e-5f;
+        if (Mathf.Abs(maxInfluenceWeight) < threshold)
+        {
+            maxInfluenceWeight = 0f;
+        }
+
         _points[2].y = maxInfluenceWeight;
         _functions = GenerateFunctions(_points);
+
+        return maxInfluenceWeight;
     }
 
     private class LinearFunction
     {
-        private float _m;
+        public float _m;
         private float _b;
 
         public LinearFunction(Vector2 startPoint, Vector2 endPoint)
@@ -97,4 +100,6 @@ public class LinearPiecewiseFunction
             return _m * x + _b;
         }
     }
+
+
 }

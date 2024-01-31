@@ -24,8 +24,7 @@ public class RelationshipSquare
 
     public void ChangeWeight(float weight)
     {
-        _weight = weight;
-        _relationship.EditMaxInfluenceWeight(weight);
+        _weight = _relationship.EditMaxInfluenceWeight(weight);
     }
 
     public void Test()

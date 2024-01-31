@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [Header("---Spawn Area---")]
     [SerializeField] private Vector2 _spawnAreaRatio = new Vector2(10, 10); // {Height, Width}
     [SerializeField] private Vector2 _spawnAreaCenter = new Vector2(0, 0); // {x, y}
+    [SerializeField] public bool _spawnAreaWrap = false;
     [HideInInspector] public Vector4 _bounds; // {minX, maxX, minY, maxY}
 
     [Header("---Color Palette---")]
@@ -16,14 +17,14 @@ public class GameManager : MonoBehaviour
 
     [Header("---Particle Settings---")]
     [SerializeField] public float _radius = 0.3f;
-    [SerializeField] public float _maxInfluenceRadius = 1f;
-    [SerializeField] public float _maxDetectionRadius = 2f;
+    [SerializeField] public float _maxInfluenceRadius = 1f; // NOTE: MUST BE > _radius
+    [SerializeField] public float _maxDetectionRadius = 2f; // NOTE: MUST BE > _maxInfluenceRadius
     [SerializeField] public float _friction = 0.1f; // the higher the value, the more friction
 
     [Header("---Particles Settings---")]
     [SerializeField] private int _particleCount = 20;
 
-    private List<GameObject> _particles = new List<GameObject>();
+    private List<Particle> _particles = new List<Particle>();
     public RelationshipSquare[][] _weights;
 
 
@@ -53,9 +54,9 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        foreach (GameObject i in _particles)
+        foreach (Particle i in _particles)
         {
-            foreach (GameObject j in _particles)
+            foreach (Particle j in _particles)
             {
                 if (i != j)
                 {
@@ -79,27 +80,25 @@ public class GameManager : MonoBehaviour
         GameObject particle = Instantiate(_particlePrefab, randomPos, Quaternion.identity);
 
         int colorIndex = Random.Range(0, _colorPalette.Length);
-        particle.GetComponent<Particle>().Init(this, _colorPalette[colorIndex], colorIndex, _weights[colorIndex]);
+        Particle p = particle.GetComponent<Particle>();
+        p.Init(this, _colorPalette[colorIndex], colorIndex, _weights[colorIndex]);
 
         // Add particle to list
-        _particles.Add(particle);
+        _particles.Add(p);
     }
 
-    private void ApplyInfluence(GameObject receiver, GameObject applier)
+    private void ApplyInfluence(Particle receiverParticle, Particle applierParticle)
     {
-        Particle receiverParticle = receiver.GetComponent<Particle>();
-        Particle applierParticle = applier.GetComponent<Particle>();
-
         // Get distance between particles
-        float distance = Vector3.Distance(receiver.transform.position, applier.transform.position);
+        float distance = Vector3.Distance(receiverParticle.transform.position, applierParticle.transform.position);
 
         if (distance <= _maxDetectionRadius)
         {
-            float t = distance / _maxDetectionRadius;
+            float t = distance / _maxDetectionRadius; // Normalize distance
             float weight = receiverParticle._relationships[applierParticle._colorIndex]._relationship.Evaluate(t);
 
             // Apply influence
-            Vector2 direction = (applier.transform.position - receiver.transform.position).normalized;
+            Vector2 direction = (applierParticle.transform.position - receiverParticle.transform.position).normalized;
             receiverParticle._velocity += direction * weight * Time.deltaTime * 100f;
         }
     }
@@ -113,10 +112,10 @@ public class GameManager : MonoBehaviour
             _weights[i] = new RelationshipSquare[colorCount];
             for (int j = 0; j < colorCount; j++)
             {
-                // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // no influence by default
+                _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // no influence by default
                 // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 1f); // attraction by default
                 // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // repulsion by default
-                _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), Random.Range(-1f, 1f));
+                // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), Random.Range(-1f, 1f));
             }
         }
     }
