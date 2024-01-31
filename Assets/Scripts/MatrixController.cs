@@ -31,17 +31,17 @@ public class MatrixController : MonoBehaviour
                 if (i == 0 && j == 0)
                 {
                     // Top left corner
-                    CreateImageGameObject("Transparent", new Color(0, 0, 0, 0), transform);
+                    CreateImageTitleObject("Transparent", new Color(0, 0, 0, 0), transform);
                 }
                 else if (i == 0)
                 {
                     // Row titles
-                    CreateImageGameObject("ColTitle_" + j, _gm._colorPalette[j - 1], transform);
+                    CreateImageTitleObject("ColTitle_" + j, _gm._colorPalette[j - 1], transform);
                 }
                 else if (j == 0)
                 {
                     // Column titles
-                    CreateImageGameObject("RowTitle_" + i, _gm._colorPalette[i - 1], transform);
+                    CreateImageTitleObject("RowTitle_" + i, _gm._colorPalette[i - 1], transform);
                 }
                 else
                 {
@@ -53,11 +53,13 @@ public class MatrixController : MonoBehaviour
         }
     }
 
-    private void CreateImageGameObject(String name, Color color, Transform parent)
+    private void CreateImageTitleObject(String name, Color color, Transform parent)
     {
         GameObject obj = new GameObject(name);
         Image img = obj.AddComponent<Image>();
+        img.sprite = Resources.Load<Sprite>("Sprites/MatrixTitleIcon");
         img.color = color;
+        obj.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         obj.transform.SetParent(parent, false);
     }
 }

@@ -2,11 +2,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class MatrixBtn : MonoBehaviour, IPointerClickHandler//, IPointerEnterHandler, IPointerExitHandler
+public class MatrixBtn : MonoBehaviour, IPointerEnterHandler, IScrollHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
+
+
     private MatrixController _mc;
     private Image _img;
     public RelationshipSquare _relationshipSquare;
+
+    // Animation
+    private float _animationTime = 0.05f;
+    private float _animationScale = 1.05f;
 
     public void Init(MatrixController mc, RelationshipSquare relationshipSquare)
     {
@@ -18,20 +24,60 @@ public class MatrixBtn : MonoBehaviour, IPointerClickHandler//, IPointerEnterHan
         _img.color = GetColorByValue(_mc._repelColor, _mc._attractionColor, _relationshipSquare._weight);
     }
 
-    public void OnPointerClick(PointerEventData pointerEventData)
+    // Scroll events
+    public void OnScroll(PointerEventData eventData)
+    {
+        if (eventData.scrollDelta.y > 0)
+        {
+            ChangeColor(0);
+            ClickAnimation();
+        }
+        else if (eventData.scrollDelta.y < 0)
+        {
+            ChangeColor(1);
+            ClickAnimation();
+        }
+    }
+
+    // Hold down event
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            ClickDownAnimation();
+        }
+        else if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            ClickDownAnimation();
+        }
+        else if (eventData.button == PointerEventData.InputButton.Middle)
+        {
+            ClickDownAnimation();
+        }
+    }
+
+    // Hold release event
+    public void OnPointerUp(PointerEventData eventData)
     {
         // LeftClick - Add attraction
-        if (pointerEventData.button == PointerEventData.InputButton.Left)
+        if (eventData.button == PointerEventData.InputButton.Left)
         {
-            Debug.Log("Left click");
             ChangeColor(0);
+            ClickReleaseAnimation();
         }
 
         // RightClick - Add repulsion
-        if (pointerEventData.button == PointerEventData.InputButton.Right)
+        else if (eventData.button == PointerEventData.InputButton.Right)
         {
-            Debug.Log("Right click");
             ChangeColor(1);
+            ClickReleaseAnimation();
+        }
+
+        // MiddleScrollClick - Reset
+        else if (eventData.button == PointerEventData.InputButton.Middle)
+        {
+            ChangeColor(2);
+            ClickReleaseAnimation();
         }
     }
 
@@ -40,12 +86,16 @@ public class MatrixBtn : MonoBehaviour, IPointerClickHandler//, IPointerEnterHan
         switch (clickType)
         {
             case 0:
-                // LeftClick - Add attraction
+                // LeftClick/ScrollUp - Add attraction
                 _relationshipSquare.ChangeWeight(ClampWeight(_relationshipSquare._weight + _mc._editValue));
                 break;
             case 1:
-                // RightClick - Add repulsion
+                // RightClick/ScrollDown - Add repulsion
                 _relationshipSquare.ChangeWeight(ClampWeight(_relationshipSquare._weight - _mc._editValue));
+                break;
+            case 2:
+                // MiddleScrollClick - Reset
+                _relationshipSquare.ChangeWeight(0);
                 break;
             default:
                 Debug.Log("Invalid clickType");
@@ -57,6 +107,28 @@ public class MatrixBtn : MonoBehaviour, IPointerClickHandler//, IPointerEnterHan
 
         // Testing
         _relationshipSquare.Test();
+    }
+
+    private void ClickAnimation()
+    {
+        LeanTween
+          .scale(gameObject, new Vector3(1f, 1f, 1f), _animationTime / 2)
+          .setEase(LeanTweenType.easeOutSine)
+          .setOnComplete(ClickReleaseAnimation);
+    }
+
+    private void ClickDownAnimation()
+    {
+        LeanTween
+            .scale(gameObject, new Vector3(1f, 1f, 1f), _animationTime / 2)
+            .setEase(LeanTweenType.easeOutSine);
+    }
+
+    private void ClickReleaseAnimation()
+    {
+        LeanTween
+            .scale(gameObject, new Vector3(_animationScale, _animationScale, _animationScale), _animationTime / 2)
+            .setEase(LeanTweenType.easeOutSine);
     }
 
     private float ClampWeight(float weight)
@@ -87,19 +159,12 @@ public class MatrixBtn : MonoBehaviour, IPointerClickHandler//, IPointerEnterHan
     // Hover: Enter
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
-        ChangeOpacity(0.8f);
+        LeanTween.scale(gameObject, new Vector3(_animationScale, _animationScale, _animationScale), _animationTime);
     }
 
     // Hover: Exit
     public void OnPointerExit(PointerEventData pointerEventData)
     {
-        ChangeOpacity(1f);
-    }
-
-    private void ChangeOpacity(float opacity)
-    {
-        Color tempColor = _img.color;
-        tempColor.a = opacity;
-        _img.color = tempColor;
+        LeanTween.scale(gameObject, Vector3.one, _animationTime);
     }
 }
