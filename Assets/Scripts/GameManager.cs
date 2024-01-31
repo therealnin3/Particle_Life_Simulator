@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour
 
         if (distance <= _maxDetectionRadius)
         {
-            float t = distance / _maxDetectionRadius; // Normalize distance
+            float t = distance; // Send in UNNORMALIZED distance
             float weight = receiverParticle._relationships[applierParticle._colorIndex]._relationship.Evaluate(t);
 
             // Apply influence
@@ -112,10 +112,10 @@ public class GameManager : MonoBehaviour
             _weights[i] = new RelationshipSquare[colorCount];
             for (int j = 0; j < colorCount; j++)
             {
-                _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // no influence by default
+                // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // no influence by default
                 // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 1f); // attraction by default
                 // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // repulsion by default
-                // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), Random.Range(-1f, 1f));
+                _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), Random.Range(-1f, 1f));
             }
         }
     }

@@ -519,12 +519,11 @@ MonoBehaviour:
   _colorPalette:
   - {r: 1, g: 0.2969432, b: 0.2969432, a: 1}
   - {r: 0.2980392, g: 0.86420065, b: 1, a: 1}
-  - {r: 0.64641356, g: 0.35933605, b: 0.8018868, a: 1}
   _radius: 0.1
-  _maxInfluenceRadius: 0.3
-  _maxDetectionRadius: 0.4
+  _maxInfluenceRadius: 0.45
+  _maxDetectionRadius: 1
   _friction: 0.25
-  _particleCount: 100
+  _particleCount: 5
 --- !u!4 &1429783270
 Transform:
   m_ObjectHideFlags: 0

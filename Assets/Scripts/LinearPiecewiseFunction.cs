@@ -22,8 +22,8 @@ public class LinearPiecewiseFunction
         // Generate 4 points and normalize them
         Vector2[] points = new Vector2[4];
         points[0] = new Vector2(0, -1f);
-        points[1] = new Vector2(gm._radius, 0);
-        points[2] = new Vector2(gm._maxInfluenceRadius, maxInfluenceWeight);
+        points[1] = new Vector2(gm._radius + gm._radius, 0);
+        points[2] = new Vector2(gm._maxInfluenceRadius + gm._radius, maxInfluenceWeight);
         points[3] = new Vector2(gm._maxDetectionRadius, 0);
         _points = NormalizePoints(points);
 
@@ -33,6 +33,9 @@ public class LinearPiecewiseFunction
 
     public float Evaluate(float t)
     {
+        // Normalize t
+        t /= _gm._maxDetectionRadius;
+
         // Smaller than radius
         if (t < _points[1].x)
         {
