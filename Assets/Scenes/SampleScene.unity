@@ -336,7 +336,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 69.5, y: -47.6}
+  m_AnchoredPosition: {x: 30.400024, y: -112.29999}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1182363146
@@ -512,18 +512,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _particlePrefab: {fileID: 1859622148874342822, guid: 59e8c0f479f902044a2c5846422c723e, type: 3}
   _spawnAreaRatio: {x: 10, y: 8}
-  _spawnAreaCenter: {x: 2.97, y: 0}
+  _spawnAreaCenter: {x: 2, y: 0}
   _spawnAreaWrap: 0
   _bounds: {x: 0, y: 0, z: 0, w: 0}
   _colorPalette:
   - {r: 1, g: 0.2969432, b: 0.2969432, a: 1}
-  - {r: 0.2980392, g: 0.86420065, b: 1, a: 1}
-  - {r: 0.9352815, g: 1, b: 0.2980392, a: 1}
+  - {r: 1, g: 0.93170327, b: 0.2980392, a: 1}
+  - {r: 0.7583964, g: 0.2980392, b: 1, a: 1}
+  - {r: 0.2980392, g: 0.57506883, b: 1, a: 1}
+  - {r: 0.2980392, g: 1, b: 0.98625284, a: 1}
+  - {r: 0.2980392, g: 1, b: 0.38279858, a: 1}
+  _colorCount: 4
   _radius: 0.05
-  _maxInfluenceRadius: 0.15
+  _maxInfluenceRadius: 0.6
   _maxDetectionRadius: 0.9
-  _friction: 0.25
-  _particleCount: 600
+  _friction: 0.1
+  _particleCount: 650
 --- !u!4 &1429783270
 Transform:
   m_ObjectHideFlags: 0

@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
 
     [Header("---Color Palette---")]
     [SerializeField] public Color[] _colorPalette = new Color[] { Color.red };
+    [SerializeField] public int _colorCount = 1;
 
     [Header("---Particle Settings---")]
     [SerializeField] public float _radius = 0.3f;
@@ -127,13 +128,15 @@ public class GameManager : MonoBehaviour
         _gridYCount = Mathf.CeilToInt(_spawnAreaRatio.y / _cellSize);
         _grid = new GridCell[_gridXCount, _gridYCount];
 
+        Vector2 topLeftCorner = new Vector2(_bounds.x, _bounds.z);
+
         // Create _grid
         for (int x = 0; x < _gridXCount; x++)
         {
             for (int y = 0; y < _gridYCount; y++)
             {
-                GridCell c = new GridCell(new Vector2(_bounds.x + (x * _cellSize) + (_cellSize / 2), (_bounds.z + (y * _cellSize) + _cellSize / 2) * 1));
-                _grid[x, y] = c;
+                Vector2 cellCenter = topLeftCorner + new Vector2(x * _cellSize + (_cellSize / 2), y * _cellSize + (_cellSize / 2));
+                _grid[x, y] = new GridCell(cellCenter);
             }
         }
     }
@@ -174,7 +177,7 @@ public class GameManager : MonoBehaviour
         Vector3 randomPos = new Vector3(Random.Range(_bounds.x, _bounds.y), Random.Range(_bounds.z, _bounds.w), 0f);
         GameObject particle = Instantiate(_particlePrefab, randomPos, Quaternion.identity);
 
-        int colorIndex = Random.Range(0, _colorPalette.Length);
+        int colorIndex = Random.Range(0, _colorCount);
         Particle p = particle.GetComponent<Particle>();
         p.Init(this, _colorPalette[colorIndex], colorIndex, _weights[colorIndex]);
 
@@ -195,17 +198,20 @@ public class GameManager : MonoBehaviour
             // Apply influence
             Vector2 direction = (applierParticle.transform.position - receiverParticle.transform.position).normalized;
             receiverParticle._velocity += direction * weight * Time.deltaTime;
+
+            // Cap the velocity
+            float maxVelocity = 0.7f; // Set your desired maximum velocity here
+            receiverParticle._velocity = Vector2.ClampMagnitude(receiverParticle._velocity, maxVelocity);
         }
     }
 
     private void SetWeights()
     {
-        int colorCount = _colorPalette.Length;
-        _weights = new RelationshipSquare[colorCount][];
-        for (int i = 0; i < colorCount; i++)
+        _weights = new RelationshipSquare[_colorCount][];
+        for (int i = 0; i < _colorCount; i++)
         {
-            _weights[i] = new RelationshipSquare[colorCount];
-            for (int j = 0; j < colorCount; j++)
+            _weights[i] = new RelationshipSquare[_colorCount];
+            for (int j = 0; j < _colorCount; j++)
             {
                 // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 0f); // no influence by default
                 // _weights[i][j] = new RelationshipSquare(this, new Vector2Int(i, j), 1f); // attraction by default

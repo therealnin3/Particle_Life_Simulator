@@ -21,7 +21,7 @@ public class LinearPiecewiseFunction
 
         // Generate 4 points and normalize them
         Vector2[] points = new Vector2[4];
-        points[0] = new Vector2(0, -1f);
+        points[0] = new Vector2(0, -20f);
         points[1] = new Vector2(gm._radius + gm._radius, 0); // NOTE: gm._radius + gm._radius -> prevents cirlces from overlapping
         points[2] = new Vector2(gm._maxInfluenceRadius, maxInfluenceWeight);
         points[3] = new Vector2(gm._maxDetectionRadius, 0);
@@ -76,11 +76,11 @@ public class LinearPiecewiseFunction
     // External use
     public float EditMaxInfluenceWeight(float maxInfluenceWeight)
     {
-        float threshold = 1e-5f;
-        if (Mathf.Abs(maxInfluenceWeight) < threshold)
-        {
-            maxInfluenceWeight = 0f;
-        }
+        // float threshold = 1e-5f;
+        // if (Mathf.Abs(maxInfluenceWeight) < threshold)
+        // {
+        //     maxInfluenceWeight = 0f;
+        // }
 
         _points[2].y = maxInfluenceWeight;
         _functions = GenerateFunctions(_points);

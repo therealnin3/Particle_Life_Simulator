@@ -21,7 +21,7 @@ public class MatrixController : MonoBehaviour
 
     private void Start()
     {
-        int amount = _gm._colorPalette.Length;
+        int amount = _gm._colorCount;
         GetComponent<GridLayoutGroup>().constraintCount = amount + 1;
 
         for (int i = 0; i < amount + 1; i++)
