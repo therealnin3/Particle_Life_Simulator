@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
 
     [Header("---Particle Settings---")]
     [SerializeField] public float _radius = 0.3f;
-    [SerializeField] public float _maxInfluenceRadius = 1f; // NOTE: MUST BE > _radius
+    [SerializeField] public float _maxInfluenceRadius = 1f; // NOTE: MUST BE > _radius + _radius
     [SerializeField] public float _maxDetectionRadius = 2f; // NOTE: MUST BE > _maxInfluenceRadius
     [SerializeField] public float _friction = 0.1f; // the higher the value, the more friction
 
@@ -27,6 +27,19 @@ public class GameManager : MonoBehaviour
     private List<Particle> _particles = new List<Particle>();
     public RelationshipSquare[][] _weights;
 
+    // Optimazation
+    private GridCell[,] _grid;
+    private float _cellSize;
+    private int _gridXCount;
+    private int _gridYCount;
+
+    private void OnValidate()
+    {
+        // Validate radius' of particle
+        float _radiusOffset = _radius * 0.2f; // force 20% offset
+        _maxInfluenceRadius = Mathf.Max(_maxInfluenceRadius, _radius + _radius + _radiusOffset);
+        _maxDetectionRadius = Mathf.Max(_maxDetectionRadius, _maxInfluenceRadius + _radiusOffset);
+    }
 
     // Gizmos
     private void OnDrawGizmos()
@@ -34,6 +47,19 @@ public class GameManager : MonoBehaviour
         // Draw spawn area
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(_spawnAreaCenter, _spawnAreaRatio);
+
+        // Draw _grid
+        if (_grid != null)
+        {
+            foreach (GridCell c in _grid)
+            {
+                if (c.particles.Count > 0)
+                {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawWireCube(c.position, new Vector3(_cellSize, _cellSize, 0f));
+                }
+            }
+        }
     }
 
     private void Awake()
@@ -50,18 +76,87 @@ public class GameManager : MonoBehaviour
 
         // Spawn Particles
         SpawnParticles(_particleCount);
+
+        // Create optimization _grid
+        CreateOptimizationGrid();
     }
 
     private void Update()
     {
-        foreach (Particle i in _particles)
+        // Update _grid
+        UpdateGrid();
+
+        // Apply influence (Optimized)
+        foreach (Particle p in _particles)
         {
-            foreach (Particle j in _particles)
+            // Get _grid position
+            int x = Mathf.FloorToInt((p.transform.position.x - _bounds.x) / _cellSize);
+            int y = Mathf.FloorToInt((p.transform.position.y - _bounds.z) / _cellSize);
+
+            // Get particles in _grid and surrounding _grid
+            List<Particle> neighbours = new List<Particle>();
+            for (int i = -1; i <= 1; i++) // x
             {
-                if (i != j)
+                for (int j = -1; j <= 1; j++) // y
                 {
-                    ApplyInfluence(i, j);
+                    int checkX = x + i;
+                    int checkY = y + j;
+
+                    if (checkX >= 0 && checkX < _gridXCount && checkY >= 0 && checkY < _gridYCount)
+                    {
+                        neighbours.AddRange(_grid[checkX, checkY].particles);
+                    }
                 }
+            }
+
+            // Apply influence
+            foreach (Particle n in neighbours)
+            {
+                if (n != p)
+                {
+                    ApplyInfluence(p, n);
+                }
+            }
+        }
+    }
+
+    private void CreateOptimizationGrid()
+    {
+        _cellSize = _maxDetectionRadius;
+        _gridXCount = Mathf.CeilToInt(_spawnAreaRatio.x / _cellSize);
+        _gridYCount = Mathf.CeilToInt(_spawnAreaRatio.y / _cellSize);
+        _grid = new GridCell[_gridXCount, _gridYCount];
+
+        // Create _grid
+        for (int x = 0; x < _gridXCount; x++)
+        {
+            for (int y = 0; y < _gridYCount; y++)
+            {
+                GridCell c = new GridCell(new Vector2(_bounds.x + (x * _cellSize) + (_cellSize / 2), (_bounds.z + (y * _cellSize) + _cellSize / 2) * 1));
+                _grid[x, y] = c;
+            }
+        }
+    }
+
+    private void UpdateGrid()
+    {
+        // Clear _grid
+        foreach (GridCell c in _grid)
+        {
+            c.particles.Clear();
+        }
+
+        // Add particles to _grid
+        foreach (Particle p in _particles)
+        {
+            // Get _grid position
+            int x = Mathf.FloorToInt((p.transform.position.x - _bounds.x) / _cellSize);
+            int y = Mathf.FloorToInt((p.transform.position.y - _bounds.z) / _cellSize);
+
+            // Add particle to _grid
+            if (x >= 0 && x < _gridXCount && y >= 0 && y < _gridYCount)
+            {
+                _grid[x, y].particles.Add(p);
             }
         }
     }
@@ -99,7 +194,7 @@ public class GameManager : MonoBehaviour
 
             // Apply influence
             Vector2 direction = (applierParticle.transform.position - receiverParticle.transform.position).normalized;
-            receiverParticle._velocity += direction * weight * Time.deltaTime * 100f;
+            receiverParticle._velocity += direction * weight * Time.deltaTime;
         }
     }
 
